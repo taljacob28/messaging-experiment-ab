@@ -84,3 +84,12 @@ jupyter notebook ab_analysis.ipynb
 Gerber, A. S., Green, D. P., & Larimer, C. W. (2008). Social pressure and voter
 turnout: Evidence from a large-scale field experiment. American Political Science
 Review, 102(1), 33 to 48.
+
+## Contact
+Tal Jacob.
+
+Email: taljacob28@gmail.com
+
+GitHub: github.com/taljacob28
+
+LinkedIn: linkedin.com/in/tal-jacob-9753bb256
