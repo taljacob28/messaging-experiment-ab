@@ -1,101 +1,76 @@
-# Messaging Experiment: Estimating Treatment Effects at Scale
+# A/B Testing: Which Message Drives the Most Action?
 
-An end-to-end analysis of a real randomized field experiment, framed as a product
-and marketing A/B test. The project tests which message variant drives the most
-action, by how much, and for which users.
+An A/B testing analysis of a large-scale randomized experiment. Four message
+variants are compared against a holdout control to measure which one lifts a target
+action the most, whether the lift is real, and which users respond best.
 
-## Business question
+The data is a real field experiment (Gerber, Green & Larimer, 2008) on 305,866
+people, analyzed with the exact methods used in product and marketing A/B testing:
+treatment effect estimation, confidence intervals, multi-arm comparison, and
+heterogeneous effects.
 
-A campaign sends one of several message variants to users, or no message at all
-(holdout control). Which variant lifts the target action the most, is the lift
-real or noise, and which users respond best?
+![Experiment design](images/experiment_design.png)
+
+## The data and variables
+
+Each person was randomly assigned to a control group or one of three messages of
+increasing social pressure, then their action was recorded.
+
+- `messages` the variant sent. `Control` received no message.
+- `primary2006` the outcome. Did the user take the action (conversion).
+- `primary2004` prior behavior. Did the user act in the comparable past event.
+- `age`, `sex`, `hhsize` user attributes used for segmentation.
+
+The data comes from an administrative registration file, so covariates are limited
+to these fields. Income and similar variables were never collected.
 
 ## Headline result
 
-The strongest social-pressure message (Neighbors) lifts the action rate by 8.1
-percentage points over control, a 27% relative gain.
+The strongest message (Neighbors) lifts the action rate by 8.1 percentage points
+over control, 95% CI [7.6, 8.7], a 27% relative gain. All variants are significant,
+but effect size separates them.
 
 ![Action rate by message variant](images/action_rate_by_variant.png)
-
-## Data
-
-Gerber, Green & Larimer (2008), a randomized field experiment on 305,866 people.
-Each person was assigned to a control group or one of three messages of increasing
-social pressure (Civic Duty, Hawthorne, Neighbors). The outcome is a binary action
-taken afterward.
-
-The data is administrative, drawn from an official registration file. Covariates
-are limited to registration fields: sex, year of birth, household size, and prior
-behavior. Income and similar fields are not present because they were never
-collected. This limitation is documented in the notebook.
-
-## Methods
-
-- Data preparation, feature engineering, and a data-quality check
-- Two-proportion z-test, computed manually, with confidence intervals
-- Multi-arm comparison with a Bonferroni correction
-- Heterogeneous treatment effects: one-way, two-way (age x prior behavior), and
-  across all treatments
-- Business impact projection and a targeting opportunity map (lift vs reach)
 
 ## Who responds most
 
 The lift is largest among already-active users and peaks in the 31 to 75 age range.
 
-![Lift by subgroup, forest plot](images/lift_forest_plot.png)
+![Lift by subgroup](images/lift_forest_plot.png)
 
 Crossing age with prior behavior pinpoints the strongest cells: active users aged
-31 to 45 and 61 to 75. The weakest is young dormant users.
+31 to 45 and 61 to 75.
 
 ![Lift by age and prior behavior](images/lift_heatmap_age_prior.png)
 
+The two milder messages are flat for the youngest and oldest users. At the age
+extremes, only the strong message works.
+
+![Lift by treatment across age](images/lift_by_treatment_age.png)
+
 ## Where is the opportunity
 
-Plotting each segment by lift (efficiency) against size (reach) shows the trade-off.
-Active users aged 31 to 45 are the most efficient large segment. The 46 to 60 group
-is the largest total opportunity, since its size outweighs a slightly smaller lift.
+Plotting lift (efficiency) against segment size (reach) shows the trade-off. Active
+users aged 31 to 45 are the most efficient large segment. The 46 to 60 group is the
+largest total opportunity.
 
-![Targeting opportunity map](images/targeting_opportunity_map.png)
-
-## Key findings
-
-- The Neighbors message lifts the action rate by 8.1 percentage points over
-  control, 95% CI [7.6, 8.7]. It wins in every subgroup tested.
-- All three messages are significant, but effect size separates them. Civic Duty
-  lifts only 1.8 points.
-- At the youngest and oldest ages, only the strong message produces a significant
-  lift. The milder messages are flat there.
-- The strong message amplifies with prior engagement, while the gentle reminder is
-  flat across engagement.
-- At equal cost per message, Neighbors produces about three times the incremental
-  actions of the next best variant.
+![Targeting opportunity](images/targeting_opportunity_map.png)
 
 ## Recommendation
 
-Ship the Neighbors message. Under a limited budget, prioritize active users aged
-31 to 45 for efficiency. To maximize total incremental actions, lead with the
-46 to 60 segment. Avoid young dormant users, where both the lift and the milder
-messages fall flat. The milder variants are significant but small.
+Ship the Neighbors message. Prioritize active users aged 31 to 45 for efficiency,
+or the 46 to 60 group for total volume. Avoid young dormant users, where both the
+lift and the milder messages fall flat.
+
+## Methods
+
+Two-proportion z-test computed manually, with confidence intervals. Multi-arm
+comparison with a Bonferroni correction. Heterogeneous effects across prior
+behavior, age, and their combination. Business impact projection.
 
 ## Tech stack
 
 Python, pandas, NumPy, SciPy, matplotlib, seaborn.
-
-## Repository structure
-
-```
-messaging-experiment-ab/
-├── data/
-│   └── social_pressure_experiment.csv
-├── images/
-│   ├── action_rate_by_variant.png
-│   ├── lift_forest_plot.png
-│   ├── lift_heatmap_age_prior.png
-│   └── targeting_opportunity_map.png
-├── ab_analysis.ipynb
-├── requirements.txt
-└── README.md
-```
 
 ## How to run
 
@@ -103,8 +78,6 @@ messaging-experiment-ab/
 pip install -r requirements.txt
 jupyter notebook ab_analysis.ipynb
 ```
-
-Run the cells in order from top to bottom.
 
 ## Reference
 
